@@ -5,7 +5,9 @@ import {
   EllipsoidTerrainProvider,
   ImageryLayer,
   OpenStreetMapImageryProvider,
+  TileMapServiceImageryProvider,
   Viewer,
+  buildModuleUrl,
 } from 'cesium'
 import 'cesium/Build/Cesium/Widgets/widgets.css'
 
@@ -14,25 +16,34 @@ let viewer: Viewer | undefined
 
 onMounted(() => {
   viewer = new Viewer(globeContainer.value!, {
-    animation: true,
+    animation: false,
     baseLayerPicker: false,
+    baseLayer: ImageryLayer.fromProviderAsync(
+      TileMapServiceImageryProvider.fromUrl(
+        buildModuleUrl('Assets/Textures/NaturalEarthII'),
+      ),
+    ),
     geocoder: false,
     homeButton: true,
-    baseLayer: new ImageryLayer(
+    infoBox: false,
+    navigationHelpButton: true,
+    requestRenderMode: true,
+    sceneModePicker: true,
+    shouldAnimate: false,
+    terrainProvider: new EllipsoidTerrainProvider(),
+    timeline: false,
+  })
+
+  viewer.imageryLayers.add(
+    new ImageryLayer(
       new OpenStreetMapImageryProvider({
         url: 'https://tile.openstreetmap.org/',
       }),
     ),
-    infoBox: false,
-    navigationHelpButton: true,
-    sceneModePicker: true,
-    terrainProvider: new EllipsoidTerrainProvider(),
-    timeline: true,
-  })
+  )
 
-  viewer.camera.flyTo({
+  viewer.camera.setView({
     destination: Cartesian3.fromDegrees(116.4074, 39.9042, 20_000_000),
-    duration: 0,
   })
 })
 
